@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Atelier: original paintings, hand-painted walls, and custom pottery. An art studio project.">
+  <title>Atelier — Art for the everyday</title>
+  <link rel="stylesheet" href="/styles.css"><script src="/app.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="topbar">
+    <a class="brand" href="#home" aria-label="Atelier home"><span class="brand-mark">a.</span><span>atelier<span class="brand-dot">.</span></span></a>
+    <nav aria-label="Main navigation" id="nav"><a href="#about">Our studio</a><a href="#gallery">Paintings</a><a href="#walls">Wall art</a><a href="#pottery">Pottery</a></nav>
+    <div class="account" id="account"><button class="text-button" data-auth="login">Log in</button><button class="button small" data-auth="register">Sign up <span aria-hidden="true">↗</span></button></div>
+  </header>
+  <main id="main">
+    <section id="home" class="hero">
+      <div class="hero-glow"></div>
+      <div class="hero-copy"><p class="eyebrow"><span class="tiny-star">✳</span> A LITTLE MORE ART. A LITTLE MORE YOU.</p>
+        <h1>Make room<br>for <em>something</em><br>beautiful.</h1>
+        <p class="hero-description">Original paintings. Walls with a story.<br>Pottery made just for you.<br>Welcome to your everyday art studio.</p>
+        <div class="hero-actions"><a class="button" href="#gallery">Explore the collection <span aria-hidden="true">↗</span></a><button class="hero-signup text-button" data-auth="register">Create your account <span aria-hidden="true">→</span></button></div>
+        <p class="hero-note">Thoughtfully chosen. Made to be lived with.</p>
+      </div>
+      <div class="hero-art" aria-label="A selection of artwork from the supplied collection">
+        <div class="art-window"><div class="window-top"><span>THE STUDIO COLLECTION</span><span>01 / 12</span></div><img src="/images/p-001.jpg" alt="Traditional artwork from the supplied studio collection" fetchpriority="high"><div class="art-caption"><div><small>A PIECE OF THE COLLECTION</small><strong>Art that feels like home.</strong></div><span class="round-arrow" aria-hidden="true">↗</span></div></div>
+        <div class="floating-label"><span aria-hidden="true">✳</span> One original. One home.</div>
+        <div class="art-mini"><img src="/images/p-008.jpg" alt="Another artwork from the studio collection" loading="lazy"><span>Find your piece <span aria-hidden="true">↗</span></span></div>
+      </div>
+      <div class="hero-bottom"><span>PAINTINGS &nbsp; / &nbsp; WALL ART &nbsp; / &nbsp; POTTERY</span><a href="#about">A look inside the studio ↓</a></div>
+    </section>
+    <section id="about" class="about section light">
+      <div class="section-kicker">01 / OUR STUDIO</div><div class="about-layout"><h2>For the spaces<br>you call <em>yours.</em></h2><div><p class="large-copy">We believe art belongs in everyday life. On a favourite wall. Around a table. In the small things you reach for.</p><p>Atelier brings a painting collection, custom wall painting and pottery requests together in one simple studio. Find a piece you love, tell us about a wall, or choose a pottery item and glaze.</p><a class="inline-link" href="#gallery">Find your starting point ↗</a></div></div>
+      <div class="studio-values"><span>One-of-a-kind paintings</span><span>Wall art for your space</span><span>Pottery in your favourite glaze</span></div>
+    </section>
+    <section id="gallery" class="section gallery-section light">
+      <div class="section-kicker">02 / THE COLLECTION</div><div class="section-heading"><div><h2>A piece that<br><em>speaks to you.</em></h2><p>Find an original for your everyday. Each painting has just one owner at a time.</p></div><span class="collection-number"><span id="collection-count">12</span><br><small>WORKS TO DISCOVER</small></span></div>
+      <div id="gallery-tools" class="gallery-tools" hidden><label>Search paintings<input id="search" type="search" placeholder="Title, artist or style…"></label><label>Availability<select id="availability"><option value="all">All paintings</option><option value="available">Available</option><option value="sold">Sold</option></select></label><button id="add-painting" class="button dark" hidden>Add a painting +</button></div>
+      <div id="gallery-content" aria-live="polite"></div>
+    </section>
+    <section class="services section" id="walls">
+      <div class="section-kicker">03 / BEYOND THE FRAME</div>
+      <div class="service-layout"><div class="service-intro"><span class="service-symbol" aria-hidden="true">↗</span><h2>Your wall.<br>A new <em>perspective.</em></h2><p>A quiet corner or a whole room. Tell us your wall size and address, pick a date, and let the studio review your booking.</p><div class="service-facts"><div><strong id="wall-rate">₹150</strong><span>per square foot</span></div><div><strong>7–90</strong><span>days ahead</span></div><div><strong>10–500</strong><span>square feet</span></div></div><p class="fine">One booking per date. Cancel until 3 days before your date. All dates use Indian Standard Time.</p></div><div class="form-surface" id="wall-form-container"></div></div>
+    </section>
+    <section class="pottery-section section light" id="pottery"><div class="section-kicker">04 / MADE FOR YOU</div><div class="service-layout"><div><span class="pottery-word" aria-hidden="true">earth.<br>fire.<br><em>yours.</em></span><h2>Custom pottery</h2><p>Choose a familiar form and a glaze you love. Request 1–12 pieces, needed at least 14 days from today.</p><p class="fine">The studio accepts or declines each request. You can edit or cancel while its status is Requested.</p></div><div class="form-surface pale" id="pottery-form-container"></div></div></section>
+    <section id="dashboard" class="section dashboard-section" hidden><div class="section-kicker">YOUR STUDIO SPACE</div><div class="section-heading"><div><h2 id="dashboard-title">My activity</h2><p id="dashboard-description">Your paintings, wall bookings and pottery requests, all in one place.</p></div><button class="button outline" id="refresh">Refresh ↻</button></div><div id="dashboard-content" aria-live="polite"></div></section>
+    <section class="join-section section light" id="join"><p class="eyebrow">LET’S MAKE SOMETHING PERSONAL</p><h2>A little art.<br><em>A lot of possibility.</em></h2><button class="button dark" data-auth="register">Join the studio ↗</button></section>
+  </main>
+  <footer><div class="footer-top"><a class="brand" href="#home">atelier.</a><p>Art for the everyday.<br>Paintings, walls and things made by hand.</p><div><a href="#about">Our studio</a><a href="#gallery">The collection</a><a href="#walls">Wall art</a><a href="#pottery">Pottery</a></div></div><div class="footer-word" aria-hidden="true">atelier.</div><div class="footer-bottom"><span>Atelier · Art for the everyday</span><span>Made with care, for the things you love.</span></div></footer>
+  <dialog id="modal" aria-labelledby="modal-title"><div class="modal-heading"><h2 id="modal-title"></h2><button class="icon-button" id="close-modal" aria-label="Close dialog">×</button></div><div id="modal-content"></div></dialog>
+  <div id="toast" role="status" aria-live="polite" hidden></div>
+</body></html>
