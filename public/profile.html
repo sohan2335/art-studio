@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>My profile — Atelier</title><link rel="stylesheet" href="/styles.css"><script src="/app.js" defer></script></head>
+<body class="profile-page">
+<a class="skip" href="#main">Skip to content</a>
+<header class="topbar"><a class="brand" href="/" aria-label="Atelier home"><span class="brand-mark">a.</span><span>atelier.</span></a><nav aria-label="Main navigation"><a href="/#about">Our studio</a><a href="/#gallery">Paintings</a><a href="/#walls">Wall art</a><a href="/#pottery">Pottery</a></nav><div class="account" id="account"></div></header>
+<main id="main" class="profile-shell">
+  <a class="inline-link" href="/">← Back to the studio</a>
+  <section id="profile-info" class="profile-info" aria-label="Your profile" hidden></section>
+  <section id="profile-gate" class="gate"><h1>Your studio space.</h1><p>Log in to see your profile, painting orders, wall bookings and pottery requests.</p><button class="button dark" data-auth="login">Log in ↗</button> <button class="text-button" data-auth="register">Create an account</button></section>
+  <section id="dashboard" hidden><div class="section-heading"><div><h2 id="dashboard-title">My activity</h2><p id="dashboard-description">Your paintings, wall bookings and pottery requests, all in one place.</p></div><button class="button outline" id="refresh">Refresh ↻</button></div><nav class="activity-nav" aria-label="Activity sections"><a href="#orders">Painting orders</a><a href="#bookings">Wall bookings</a><a href="#pottery">Pottery requests</a></nav><div id="dashboard-content" aria-live="polite"></div></section>
+</main>
+<footer class="profile-footer"><a class="brand" href="/">atelier.</a><p>Art for the everyday.</p></footer>
+<dialog id="modal" aria-labelledby="modal-title"><div class="modal-heading"><h2 id="modal-title"></h2><button class="icon-button" id="close-modal" aria-label="Close dialog">×</button></div><div id="modal-content"></div></dialog><div id="toast" role="status" aria-live="polite" hidden></div>
+</body></html>

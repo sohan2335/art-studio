@@ -31,7 +31,7 @@ No `.env` file is needed. `.env.example` lists every optional application enviro
 - One active wall request/confirmation per date. Requested dates are reserved immediately. Decline or cancellation releases the date.
 - Studio confirms or declines wall requests. Customers cancel requested/confirmed bookings at least 3 calendar days before the service date, inclusive.
 - Pottery items and glazes come from the official seed. Whole-number quantity 1–12, needed-by date at least 14 days away. Customers edit or cancel only while Requested. Studio accepts or declines.
-- Customer dashboards show only owned records. Studio dashboard shows every customer's records. All required statuses appear.
+- The separate Profile page (`/profile.html`) shows account details and activity. Customer activity contains only owned records. Studio activity shows every customer's records. All required statuses appear.
 - API returns 401 for missing/expired login, 403 for wrong role, 404 for another customer's record and 409 for conflicts or invalid status transitions.
 - Loading, empty, retryable error states and clear conflict messages. Responsive layouts, keyboard-operable dialogs, labelled forms and reduced-motion support.
 - Password hashing with random salts and scrypt. Random server sessions, hashed session tokens, HttpOnly SameSite cookies, prepared SQL, escaped UI text, same-origin mutation checks, basic authentication throttling and security headers.
@@ -52,6 +52,7 @@ The tests start a temporary in-memory database, bind a local test server and dis
 
 - `server.js`: HTTP server, SQLite schema, validation, password/session handling, permissions and routes.
 - `public/index.html`: homepage structure and section anchors.
+- `public/profile.html`: separate account profile and activity page.
 - `public/styles.css`: colours, glass navigation, layouts and responsive rules.
 - `public/app.js`: screen state, API requests, form events and rendering.
 - `data/seed.json` and `public/images/`: assignment-provided catalogue and sample images.
@@ -72,3 +73,6 @@ Seed records initially marked sold have no fabricated customer orders. The suppl
 The assignment asks for a public GitHub repository, README, `.env.example`, DESIGN.md and a narrated demo of at most 5 minutes, submitted through its Google form by **23 October 2026, 11:59 PM IST**. Source repository: https://github.com/sohan2335/art-studio . Uploading a demo and submitting the form have not been performed. The video will be recorded only on your command.
 
 
+
+
+Profile update: open **Profile** in the top bar to view orders, wall bookings and pottery requests on a separate webpage. The homepage has no activity section. Old `/#dashboard` links redirect to `/profile.html`. New painting orders and requests open the Profile page after success.

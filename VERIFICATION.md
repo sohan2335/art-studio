@@ -27,3 +27,8 @@ The browser test used explicitly artificial customer and address data. Generated
 ## Limits
 
 The HTTP tests cover more invalid-input and ownership cases than the manual browser walkthrough. Not every browser, keyboard/screen-reader combination or device has been tested. This is a local server preview, not a deployment or a cloud-database connection. The image files are the assignment's samples, not independently verified art provenance.
+
+
+## Separate Profile page update
+
+Browser verified `/profile.html` displaying the signed-in customer name, email, owned painting orders, wall bookings and pottery requests. Back to the studio returns to the homepage. The top-bar Profile link returns to the separate page. A DOM check confirmed the homepage contains no dashboard element. Existing records were viewed without modification. Role and ownership checks remain in the same server API.

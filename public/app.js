@@ -1,5 +1,6 @@
 // Plain JavaScript: state holds data, render functions display it, API calls save changes.
 const $ = selector => document.querySelector(selector);
+const profilePage = location.pathname === '/profile.html';
 const state = { user:null, catalog:null, activity:null, search:'', availability:'all' };
 const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const money = n => new Intl.NumberFormat('en-IN', {style:'currency',currency:'INR',maximumFractionDigits:0}).format(n);
@@ -31,15 +32,22 @@ const addDays=(day,n)=>{const d=new Date(day+'T12:00:00Z');d.setUTCDate(d.getUTC
 function delta(date){return (Date.parse(date+'T00:00:00Z')-Date.parse((state.activity?.today||state.catalog.today)+'T00:00:00Z'))/86400000;}
 function status(value){return `<span class="status ${esc(value)}">${esc(value)}</span>`;}
 function renderAccount(){
-  $('#account').innerHTML=state.user?`<a class="user-label" href="#dashboard">${esc(studio()?'Studio dashboard':state.user.name)}</a><button class="button small" id="logout">Log out ↗</button>`:`<button class="text-button" data-auth="login">Log in</button><button class="button small" data-auth="register">Sign up ↗</button>`;
-  $('#join').hidden=!!state.user;$('#dashboard').hidden=!state.user;
-  $('.hero-signup').hidden=!!state.user;
-  $('#gallery-tools').hidden=!state.user;$('#add-painting').hidden=!studio();
-  $('#dashboard-title').textContent=studio()?'Studio dashboard':'My activity';
-  $('#dashboard-description').textContent=studio()?'Review customer requests and manage the collection.':'Your paintings, wall bookings and pottery requests, all in one place.';
+  $('#account').innerHTML=state.user?`<a class="user-label" href="/profile.html">${studio()?'Studio profile':'Profile'}</a><button class="button small" id="logout">Log out ↗</button>`:`<button class="text-button" data-auth="login">Log in</button><button class="button small" data-auth="register">Sign up ↗</button>`;
+  if($('#join'))$('#join').hidden=!!state.user;
+  if($('#dashboard'))$('#dashboard').hidden=!state.user;
+  if($('.hero-signup'))$('.hero-signup').hidden=!!state.user;
+  if($('#gallery-tools'))$('#gallery-tools').hidden=!state.user;
+  if($('#add-painting'))$('#add-painting').hidden=!studio();
+  if($('#dashboard-title'))$('#dashboard-title').textContent=studio()?'Studio activity':'My activity';
+  if($('#dashboard-description'))$('#dashboard-description').textContent=studio()?'Review customer requests and manage the collection.':'Your paintings, wall bookings and pottery requests, all in one place.';
+  if($('#profile-gate'))$('#profile-gate').hidden=!!state.user;
+  if($('#profile-info')){
+    $('#profile-info').hidden=!state.user;
+    $('#profile-info').innerHTML=state.user?`<div class="profile-avatar" aria-hidden="true">${esc(state.user.name.slice(0,1).toUpperCase())}</div><div><p class="eyebrow">${studio()?'STUDIO ACCOUNT':'MY PROFILE'}</p><h1>${esc(state.user.name)}</h1><p>${esc(state.user.email)}</p></div>`:'';
+  }
 }
 function renderGallery(){
-  const el=$('#gallery-content');
+  const el=$('#gallery-content');if(!el)return;
   $('#collection-count').textContent=state.catalog?.paintings.length||12;
   if(!state.user){el.innerHTML=`<div class="art-grid">${[{id:'p-001',title:'Madhubani Peacock Garden',artist:'Meera Kumari',price:6500},{id:'p-005',title:'Kalamkari Tree of Life',artist:'Padma Reddy',price:9200},{id:'p-008',title:'Rajasthani Miniature: Courtyard at Dusk',artist:'Kishan Singh Rathore',price:15500}].map(p=>`<article class="painting-card"><div class="painting-picture"><img src="/images/${p.id}.jpg" loading="lazy" alt="Supplied sample image for ${esc(p.title)}"></div><h3>${esc(p.title)}</h3><p class="artist">${esc(p.artist)}</p><div class="painting-bottom"><strong>${money(p.price)}</strong><button class="link-button" data-auth="register">Sign up to explore ↗</button></div></article>`).join('')}</div>${gate('Your next favourite is waiting.','Log in to see current availability and the full collection of 12 supplied paintings.')}`;return;}
   if(!state.catalog)return;
@@ -47,8 +55,9 @@ function renderGallery(){
   el.innerHTML=paintings.length?`<div class="art-grid fade-in">${paintings.map(p=>`<article class="painting-card"><div class="painting-picture"><img src="${esc(p.imageUrl)}" loading="lazy" alt="Supplied sample image for ${esc(p.title)}">${status(p.status)}</div><h3>${esc(p.title)}</h3><p class="artist">${esc(p.artist)}</p><div class="painting-bottom"><strong>${money(p.price)}</strong><button class="link-button" data-detail="${esc(p.id)}">View painting ↗</button>${studio()&&p.status==='available'?`<button class="link-button" data-edit-painting="${esc(p.id)}">Edit</button>`:''}</div></article>`).join('')}</div>`:'<div class="empty">No paintings match these filters. Try another title, artist or availability.</div>';
 }
 function renderForms(){
+  if(!$('#wall-form-container'))return;
   if(!state.user){$('#wall-form-container').innerHTML=gate('A blank wall is a beginning.');$('#pottery-form-container').innerHTML=gate('Something made for you.');return;}
-  if(studio()){$('#wall-form-container').innerHTML='<h3>A space for the studio.</h3><p>Customers request wall dates here. Review all incoming bookings in your studio dashboard below.</p><a class="button" href="#dashboard">Review bookings ↓</a>';$('#pottery-form-container').innerHTML='<h3>From request to creation.</h3><p>Customers choose a form, glaze and date. Accept or decline their requests from the dashboard.</p><a class="button dark" href="#dashboard">Review pottery ↓</a>';return;}
+  if(studio()){$('#wall-form-container').innerHTML='<h3>A space for the studio.</h3><p>Customers request wall dates here. Review all incoming bookings in your studio profile.</p><a class="button" href="/profile.html">Review bookings ↓</a>';$('#pottery-form-container').innerHTML='<h3>From request to creation.</h3><p>Customers choose a form, glaze and date. Accept or decline their requests from the studio profile.</p><a class="button dark" href="/profile.html">Review pottery ↓</a>';return;}
   if(!state.catalog)return;
   const {today,rate,busyDates}=state.catalog;
   $('#wall-rate').textContent=money(rate);
@@ -70,7 +79,7 @@ function renderActivity(){
   if(!state.activity)return;
   $('#dashboard-content').innerHTML=['orders','bookings','pottery'].map(type=>{
     const names={orders:'Painting orders',bookings:'Wall bookings',pottery:'Pottery requests'};
-    return `<div class="activity-group"><h3>${names[type]} <small>(${state.activity[type].length})</small></h3><div class="activity-list">${state.activity[type].length?state.activity[type].map(r=>{
+    return `<div class="activity-group" id="${type}"><h3>${names[type]} <small>(${state.activity[type].length})</small></h3><div class="activity-list">${state.activity[type].length?state.activity[type].map(r=>{
       let title,description;
       if(type==='orders'){title=r.title;description=`${money(r.price)} · Order ${r.id.slice(0,8)}`;}
       if(type==='bookings'){title=`Wall painting · ${r.date}`;description=`${r.size} sq ft × ${money(r.rate)} = ${money(r.price)}`;}
@@ -83,18 +92,19 @@ function renderActivity(){
         if(cancel)actions+=`<button class="action-button danger" data-record="${r.id}" data-type="${type}" data-action="cancel">Cancel ${type==='orders'?'order':type==='bookings'?'booking':'request'}</button>`;
       }
       return `<article class="activity"><div><h4>${esc(title)}</h4><p>${esc(description)}</p>${type==='bookings'?`<p>${esc(r.address)}</p>`:''}${studio()?`<p>Customer: ${esc(r.customer_name)} · ${esc(r.customer_email)}</p>`:''}<p>Created ${esc(r.created.slice(0,10))}</p>${!studio()&&type==='bookings'&&['requested','confirmed'].includes(r.status)&&delta(r.date)<3?'<p>The cancellation window has closed.</p>':''}${actions?`<div class="actions">${actions}</div>`:''}</div><div>${status(r.status)}</div></article>`;
-    }).join(''):`<div class="empty">${studio()?'No customer activity here yet.':'Nothing here yet. Explore the collection or make a request above.'}</div>`}</div></div>`;
+    }).join(''):`<div class="empty">${studio()?'No customer activity here yet.':'Nothing here yet. Visit the studio to explore paintings or make a request.'}</div>`}</div></div>`;
   }).join('');
 }
 async function loadCatalog(){
-  $('#gallery-content').innerHTML='<div class="loading">Opening the collection…</div>';
-  for(const id of ['#wall-form-container','#pottery-form-container'])$(id).innerHTML='<div class="loading">Loading studio options…</div>';
+  if($('#gallery-content'))$('#gallery-content').innerHTML='<div class="loading">Opening the collection…</div>';
+  for(const id of ['#wall-form-container','#pottery-form-container'])if($(id))$(id).innerHTML='<div class="loading">Loading studio options…</div>';
   try{state.catalog=await api('/catalog');renderGallery();renderForms();}
-  catch(error){$('#gallery-content').innerHTML=`<div class="error-state">${esc(error.message)}<br><button class="link-button" id="retry-catalog">Try again</button></div>`;for(const id of ['#wall-form-container','#pottery-form-container'])$(id).innerHTML='<p>Studio options could not load. Retry the collection above.</p>';}
+  catch(error){if($('#gallery-content'))$('#gallery-content').innerHTML=`<div class="error-state">${esc(error.message)}<br><button class="link-button" id="retry-catalog">Try again</button></div>`;for(const id of ['#wall-form-container','#pottery-form-container'])if($(id))$(id).innerHTML='<p>Studio options could not load. Retry the collection above.</p>';}
 }
 async function loadActivity(){
+  if(!$('#dashboard-content'))return;
   $('#dashboard-content').innerHTML='<div class="loading">Loading your studio activity…</div>';
-  try{state.activity=await api('/dashboard');if(state.catalog)renderActivity();else $('#dashboard-content').innerHTML='<div class="error-state">Load the collection first, then refresh your activity.</div>';}
+  try{state.activity=await api('/dashboard');if(state.catalog)renderActivity();else $('#dashboard-content').innerHTML='<div class="error-state">Studio options could not load. Use Refresh to try again.</div>';}
   catch(error){$('#dashboard-content').innerHTML=`<div class="error-state">${esc(error.message)}<br><button class="link-button" id="retry-activity">Try again</button></div>`;}
 }
 async function refresh(){await loadCatalog();if(state.user)await loadActivity();}
@@ -112,14 +122,14 @@ document.addEventListener('click',async event=>{
   if(button.id==='retry-catalog')return refresh();
   if(button.dataset.editPottery){const record=state.activity.pottery.find(x=>x.id===button.dataset.editPottery);return setModal('Edit pottery request',potteryForm(record));}
   if(button.id==='logout'){
-    button.disabled=true;try{await api('/logout',{method:'POST',body:{}});state.user=null;state.catalog=null;state.activity=null;renderAccount();renderGallery();renderForms();location.hash='home';toast('You’re logged out.');}catch(error){toast(error.message);}finally{button.disabled=false;}return;
+    button.disabled=true;try{await api('/logout',{method:'POST',body:{}});state.user=null;state.catalog=null;state.activity=null;renderAccount();renderGallery();renderForms();if(profilePage)location.href='/';else location.hash='home';toast('You’re logged out.');}catch(error){toast(error.message);}finally{button.disabled=false;}return;
   }
   if(button.dataset.buy){
     const painting=state.catalog.paintings.find(x=>x.id===button.dataset.buy);
     setModal('Make it yours?',`<p class="detail-copy">Place an order for <strong>${esc(painting.title)}</strong> at ${money(painting.price)}?</p><p class="fine">No payment is collected. The painting becomes unavailable to other customers. You can cancel the order in My activity.</p><button class="button dark" data-confirm-buy="${painting.id}">Place order ↗</button><p class="form-error" id="detail-error" role="alert"></p>`);return;
   }
   if(button.dataset.confirmBuy){
-    button.disabled=true;try{await api('/orders',{method:'POST',body:{painting_id:button.dataset.confirmBuy}});modal.close();toast('Your painting order is placed.');await refresh();}catch(error){$('#detail-error').textContent=error.message;if(error.status===409)await loadCatalog();}finally{button.disabled=false;}return;
+    button.disabled=true;try{await api('/orders',{method:'POST',body:{painting_id:button.dataset.confirmBuy}});modal.close();toast('Your painting order is placed.');location.href='/profile.html';}catch(error){$('#detail-error').textContent=error.message;if(error.status===409)await loadCatalog();}finally{button.disabled=false;}return;
   }
   if(button.dataset.record){
     const {record,type,action}=button.dataset;
@@ -135,11 +145,11 @@ document.addEventListener('submit',async event=>{
   const button=form.querySelector('button[type=submit]'),errorEl=form.querySelector('.form-error'),b=Object.fromEntries(new FormData(form));errorEl.textContent='';button.disabled=true;const original=button.textContent;button.textContent='Please wait…';
   try{
     if(form.id==='auth-form'){
-      const data=await api('/'+form.dataset.mode,{method:'POST',body:b});modal.close();toast(`Welcome, ${data.user.name}.`);await afterLogin(data.user);location.hash=studio()?'dashboard':'gallery';
+      const data=await api('/'+form.dataset.mode,{method:'POST',body:b});modal.close();toast(`Welcome, ${data.user.name}.`);await afterLogin(data.user);if(studio()&&!profilePage)location.href='/profile.html';else if(!profilePage)location.hash='gallery';
     }else if(form.id==='wall-form'){
-      await api('/bookings',{method:'POST',body:{...b,size:Number(b.size)}});toast('Wall booking requested. The studio will review it.');await refresh();location.hash='dashboard';
+      await api('/bookings',{method:'POST',body:{...b,size:Number(b.size)}});toast('Wall booking requested. The studio will review it.');await refresh();if(!profilePage)location.href='/profile.html';
     }else if(form.id==='pottery-form'||form.id==='edit-pottery-form'){
-      const editing=form.id==='edit-pottery-form';await api('/pottery'+(editing?'/'+form.dataset.id:''),{method:editing?'PATCH':'POST',body:{...b,quantity:Number(b.quantity),...(editing?{action:'edit'}:{})}});if(editing)modal.close();toast(editing?'Pottery request updated.':'Pottery request sent to the studio.');await refresh();location.hash='dashboard';
+      const editing=form.id==='edit-pottery-form';await api('/pottery'+(editing?'/'+form.dataset.id:''),{method:editing?'PATCH':'POST',body:{...b,quantity:Number(b.quantity),...(editing?{action:'edit'}:{})}});if(editing)modal.close();toast(editing?'Pottery request updated.':'Pottery request sent to the studio.');await refresh();if(!profilePage)location.href='/profile.html';
     }else if(form.id==='painting-form'){
       const id=form.dataset.id;await api('/paintings'+(id?'/'+id:''),{method:id?'PATCH':'POST',body:{...b,price:Number(b.price)}});modal.close();toast('Painting saved.');await refresh();location.hash='gallery';
     }
@@ -147,4 +157,4 @@ document.addEventListener('submit',async event=>{
   finally{button.disabled=false;button.textContent=original;}
 });
 async function start(){renderAccount();renderGallery();renderForms();try{const data=await api('/me');await afterLogin(data.user);}catch(error){if(error.status!==401)toast(error.message);}}
-start();
+if(!profilePage&&location.hash==='#dashboard')location.replace('/profile.html');else start();
