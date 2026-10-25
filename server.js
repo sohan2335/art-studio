@@ -20,6 +20,10 @@ function text(value, name, min = 1, max = 500) {
   if (typeof value !== 'string' || value.trim().length < min || value.trim().length > max) fail(400, `${name} must contain ${min}â€“${max} characters.`);
   return value.trim();
 }
+function passwordInput(value, min = 1) {
+  if (typeof value !== 'string' || value.length < min || value.length > 128) fail(400, `Password must contain ${min}–128 characters.`);
+  return value;
+}
 function integer(value, name, min, max) {
   if (typeof value !== 'number' || !Number.isSafeInteger(value) || value < min || value > max) fail(400, `${name} must be a whole number from ${min} to ${max}.`);
   return value;
@@ -70,13 +74,15 @@ export function createStudio({ dbPath = process.env.DB_PATH || resolve(ROOT, 'da
     else if (++entry.count > 30) fail(429, 'Too many attempts. Please wait one minute.');
   }
   async function body(req) {
-    if (!(req.headers['content-type'] || '').startsWith('application/json')) fail(415, 'Send JSON data.');
-    let data = '';
-    for await (const chunk of req) { data += chunk; if (Buffer.byteLength(data) > 24000) fail(413, 'The request is too large.'); }
+    if ((req.headers['content-type'] || '').split(';')[0].trim().toLowerCase() !== 'application/json') fail(415, 'Send JSON data.');
+    let size = 0; const chunks = [];
+    for await (const chunk of req) { size += chunk.length; if (size <= 24000) chunks.push(chunk); }
+    if (size > 24000) fail(413, 'The request is too large.');
+    const data = Buffer.concat(chunks).toString('utf8');
     try { const value = JSON.parse(data); if (!value || typeof value !== 'object' || Array.isArray(value)) fail(400, 'Invalid JSON object.'); return value; } catch (e) { if (e.status) throw e; fail(400, 'Invalid JSON.'); }
   }
   function user(req) {
-    const token = /(?:^|; )studio_session=([a-f0-9]{64})(?:;|$)/.exec(req.headers.cookie || '')?.[1];
+    const token = /(?:^|;\s*)studio_session=([a-f0-9]{64})(?:;|$)/.exec(req.headers.cookie || '')?.[1];
     if (!token) fail(401, 'Please log in to continue.');
     const u = get('SELECT u.id,u.name,u.email,u.role FROM sessions s JOIN users u ON u.id=s.user_id WHERE s.token=? AND s.expires>?', tokenHash(token), Date.now());
     if (!u) fail(401, 'Your session has expired. Please log in again.');
@@ -110,14 +116,14 @@ export function createStudio({ dbPath = process.env.DB_PATH || resolve(ROOT, 'da
       if (b.role && b.role !== 'customer') fail(403, 'Only customer signup is available.');
       const name = text(b.name, 'Name', 2, 80), email = text(b.email, 'Email', 3, 254).toLowerCase();
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) fail(400, 'Enter a valid email address.');
-      const password = text(b.password, 'Password', 8, 128);
+      const password = passwordInput(b.password, 8);
       if (get('SELECT id FROM users WHERE email=?', email)) fail(409, 'An account already uses this email. Please log in.');
       const id = randomUUID();run('INSERT INTO users VALUES(?,?,?,?,?)', id, name, email, hashPassword(password), 'customer');session(res, id);
       return { user: { id, name, email, role: 'customer' } };
     }
     if (path === '/api/login' && method === 'POST') {
       throttle(req, 'login'); const b = await body(req);
-      const email = text(b.email, 'Email', 3, 254).toLowerCase(), password = text(b.password, 'Password', 1, 128);
+      const email = text(b.email, 'Email', 3, 254).toLowerCase(), password = passwordInput(b.password);
       const u = get('SELECT * FROM users WHERE email=?', email);
       if (!u) { scryptSync(password, 'dummy-login-salt', 64); fail(401, 'Email or password is incorrect.'); }
       if (!passwordMatches(password, u.password)) fail(401, 'Email or password is incorrect.');
@@ -203,7 +209,8 @@ export function createStudio({ dbPath = process.env.DB_PATH || resolve(ROOT, 'da
         const result=await api(req,res,pathname);res.end(JSON.stringify(result));return;
       }
       if(!['GET','HEAD'].includes(req.method))fail(405,'Method not allowed.');
-      const publicRoot=resolve(ROOT,'public'),file=resolve(publicRoot,'.'+decodeURIComponent(pathname==='/'?'/index.html':pathname));
+      let decoded;try{decoded=decodeURIComponent(pathname==='/'?'/index.html':pathname);}catch{fail(400,'Invalid page address.');}
+      const publicRoot=resolve(ROOT,'public'),file=resolve(publicRoot,'.'+decoded);
       if(!file.startsWith(publicRoot+'/')&&!file.startsWith(publicRoot+'\\'))fail(404,'File not found.');
       let bytes;try{bytes=readFileSync(file);}catch{fail(404,'File not found.');}
       res.setHeader('Content-Type',({'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.jpg':'image/jpeg','.svg':'image/svg+xml'})[extname(file)]||'application/octet-stream');

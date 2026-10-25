@@ -66,6 +66,7 @@ test('Full assignment lifecycle, permissions, conflicts and boundary conditions'
   });
   await t.test('Wall size/date boundaries, unique active date and snapshot price',async()=>{
     const b={date:future(7),size:10,address:'123 Test Street, Hyderabad'};
+    assert.equal((await req(admin,'/bookings','POST',b)).status,403);
     for(const value of [9,501,10.5])assert.equal((await req(alice,'/bookings','POST',{...b,size:value})).status,400);
     for(const date of [future(6),future(91),'2026-02-30'])assert.equal((await req(alice,'/bookings','POST',{...b,date})).status,400);
     const results=await Promise.all([req(alice,'/bookings','POST',b),req(bob,'/bookings','POST',b)]);
@@ -74,6 +75,8 @@ test('Full assignment lifecycle, permissions, conflicts and boundary conditions'
     const owner=results[0].status===200?alice:bob,other=owner===alice?bob:alice;
     assert.equal((await req(owner,'/bookings/'+booking)).data.record.price,1500);
     assert.equal((await req(other,'/bookings/'+booking)).status,404);
+    assert.equal((await req(other,'/bookings/'+booking,'PATCH',{action:'cancel'})).status,404);
+    assert.equal((await req(admin,'/bookings/'+booking,'PATCH',{action:'cancel'})).status,403);
     assert.equal((await req(owner,'/bookings/'+booking,'PATCH',{action:'confirmed'})).status,403);
     assert.equal((await req(admin,'/bookings/'+booking,'PATCH',{action:'confirmed'})).status,200);
     assert.equal((await req(admin,'/bookings/'+booking,'PATCH',{action:'declined'})).status,409);
@@ -90,8 +93,12 @@ test('Full assignment lifecycle, permissions, conflicts and boundary conditions'
   });
   await t.test('Pottery validation, edits, ownership and final-state restrictions',async()=>{
     const b={item_id:'i-01',glaze_id:'g-01',quantity:1,needed_by:future(14)};
+    assert.equal((await req(admin,'/pottery','POST',b)).status,403);
     for(const patch of [{quantity:0},{quantity:13},{quantity:1.5},{item_id:'bad'},{glaze_id:'bad'},{needed_by:future(13)}])assert.equal((await req(alice,'/pottery','POST',{...b,...patch})).status,400);
     pottery=(await req(alice,'/pottery','POST',b)).data.id;
+    assert.equal((await req(bob,'/pottery/'+pottery)).status,404);
+    assert.equal((await req(admin,'/pottery/'+pottery,'PATCH',{action:'cancel'})).status,403);
+    assert.equal((await req(alice,'/pottery/'+pottery,'PATCH',{action:'accepted'})).status,403);
     assert.equal((await req(bob,'/pottery/'+pottery,'PATCH',{action:'edit',...b})).status,404);
     assert.equal((await req(alice,'/pottery/'+pottery,'PATCH',{action:'edit',...b,quantity:12})).status,200);
     assert.equal((await req(admin,'/pottery/'+pottery,'PATCH',{action:'accepted'})).status,200);

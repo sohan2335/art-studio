@@ -46,7 +46,7 @@ All dates use **Asia/Kolkata (IST)** and calendar-day rules. The app stores date
 
 Run `npm test` or `node --test tests/*.test.js`.
 
-The tests start a temporary in-memory database, bind a local test server and discard everything afterward. They cover role escalation, missing login, record ownership, simultaneous purchase/date attempts, cancellation release, studio painting edits, booking date/size boundaries, cancellation cutoff, pottery validation/edit/accept/decline/cancel and password hashing. The tests need loopback access.
+The tests use isolated in-memory and temporary-file databases, bind local test servers and discard test data afterward. They cover role escalation, missing login, record ownership, simultaneous purchase/date attempts, cancellation release, studio painting edits, booking date/size boundaries, cancellation cutoff, pottery validation/edit/accept/decline/cancel and password hashing. The tests need loopback access.
 
 ## Files to understand
 
@@ -59,7 +59,7 @@ The tests start a temporary in-memory database, bind a local test server and dis
 - `public/styles.css`: colours, glass navigation, layouts and responsive rules.
 - `public/app.js`: screen state, API requests, form events and rendering.
 - `data/seed.json` and `public/images/`: assignment-provided catalogue and sample images.
-- `tests/studio.test.js`: executable examples of business rules.
+- `tests/studio.test.js` and `tests/regressions.test.js`: executable business rules and request/session/persistence regressions.
 - `DESIGN.md`: answers to the assignment design questions.
 - `SUBMISSION.md`: remaining submission steps. A silent walkthrough is prepared separately; your own narration is still required.
 

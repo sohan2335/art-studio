@@ -14,7 +14,13 @@ async function api(path, options={}) {
   try { response=await fetch('/api'+path, {credentials:'same-origin', ...options, headers:{'Content-Type':'application/json',...options.headers}, body:options.body===undefined?undefined:JSON.stringify(options.body)}); }
   catch { throw new Error('Cannot reach the studio. Check your connection and try again.'); }
   let data;try { data=await response.json(); } catch { throw new Error('The server returned an unexpected response. Please try again.'); }
-  if(!response.ok){ const e=new Error(data.error||'Unable to complete this action.');e.status=response.status;throw e; }return data;
+  if(!response.ok){ if(response.status===401&&state.user&&path!=='/login'){clearSession();toast('Your session has expired. Please log in again.');} const e=new Error(data.error||'Unable to complete this action.');e.status=response.status;throw e; }return data;
+}
+function clearSession(){
+  state.user=null;state.catalog=null;state.activity=null;
+  if(modal.open)modal.close();
+  if($('#dashboard-content'))$('#dashboard-content').innerHTML='';
+  renderAccount();renderGallery();renderForms();
 }
 function setModal(title,content) { $('#modal-title').textContent=title;$('#modal-content').innerHTML=content;if(!modal.open)modal.showModal(); }
 $('#close-modal').onclick=()=>modal.close();
@@ -106,7 +112,7 @@ async function loadCatalog(){
   if($('#gallery-content'))$('#gallery-content').innerHTML='<div class="loading">Opening the collection…</div>';
   for(const id of ['#wall-form-container','#pottery-form-container'])if($(id))$(id).innerHTML='<div class="loading">Loading studio options…</div>';
   try{state.catalog=await api('/catalog');renderGallery();renderForms();}
-  catch(error){if($('#gallery-content'))$('#gallery-content').innerHTML=`<div class="error-state">${esc(error.message)}<br><button class="link-button" id="retry-catalog">Try again</button></div>`;for(const id of ['#wall-form-container','#pottery-form-container'])if($(id))$(id).innerHTML='<p>Studio options could not load. Retry the collection above.</p>';}
+  catch(error){if($('#gallery-content'))$('#gallery-content').innerHTML=`<div class="error-state">${esc(error.message)}<br><button class="link-button" data-retry-catalog>Try again</button></div>`;for(const id of ['#wall-form-container','#pottery-form-container'])if($(id))$(id).innerHTML=`<div class="error-state">${esc(error.message)}<br><button class="link-button" data-retry-catalog>Try again</button></div>`;}
 }
 async function loadActivity(){
   if(!$('#dashboard-content'))return;
@@ -126,10 +132,10 @@ document.addEventListener('click',async event=>{
   if(button.id==='add-painting')return paintingEditor();
   if(button.id==='refresh')return refresh();
   if(button.id==='retry-activity')return loadActivity();
-  if(button.id==='retry-catalog')return refresh();
+  if(button.hasAttribute('data-retry-catalog'))return refresh();
   if(button.dataset.editPottery){const record=state.activity.pottery.find(x=>x.id===button.dataset.editPottery);return setModal('Edit pottery request',potteryForm(record));}
   if(button.id==='logout'){
-    button.disabled=true;try{await api('/logout',{method:'POST',body:{}});state.user=null;state.catalog=null;state.activity=null;renderAccount();renderGallery();renderForms();if(profilePage)location.href='/';else location.hash='home';toast('You’re logged out.');}catch(error){toast(error.message);}finally{button.disabled=false;}return;
+    button.disabled=true;try{await api('/logout',{method:'POST',body:{}});clearSession();if(profilePage)location.href='/';else location.hash='home';toast('You’re logged out.');}catch(error){toast(error.message);}finally{button.disabled=false;}return;
   }
   if(button.dataset.buy){
     const painting=state.catalog.paintings.find(x=>x.id===button.dataset.buy);

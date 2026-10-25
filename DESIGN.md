@@ -16,7 +16,7 @@ Purchases and booking creations run inside `BEGIN IMMEDIATE` transactions. SQLit
 
 All required application workflows are implemented: customer signup/login, roles, official painting catalogue, painting add/edit/buy/cancel, wall validation/pricing/unique dates/confirm/decline/cancel, pottery validation/edit/cancel/accept/decline, owned/all-record dashboards, statuses, and data loading/empty/error states. The interface adds a studio introduction, video-inspired floating navigation, responsive styling, search and availability filtering. The long seed title has full-detail display and wrapping.
 
-The brief's excluded features remain excluded. There is no deployment or narrated submission demo yet. A silent live-browser walkthrough has been prepared separately. The source repository is https://github.com/sohan2335/art-studio . The walkthrough was recorded on the user's command; the user still needs to add their own voice. Next steps are user feedback, interview practice, reviewing the public source repository, and recording/submitting the demo. Before any public production deployment, replace the supplied demo account, use HTTPS, review image rights and add operational safeguards for the intended traffic.
+The brief's excluded features remain excluded. There is no deployment or narrated submission demo yet. A silent live-browser walkthrough has been prepared separately. The source repository is https://github.com/sohan2335/art-studio . The walkthrough was recorded on the user's command; the user still needs to add their own voice. Next steps are user feedback, interview practice, reviewing the public source repository, and recording/submitting the demo. Before any public production deployment, configure the studio account, use HTTPS, review image rights and add operational safeguards for the intended traffic.
 
 ## Explicit interpretations
 
@@ -32,5 +32,4 @@ The brief's excluded features remain excluded. There is no deployment or narrate
 
 ## Test evidence
 
-`node --test tests/studio.test.js` passes eight tests, including six scenario groups under the complete-lifecycle test. Assertions cover authentication, authorization, ownership, active-resource uniqueness, boundaries, status transitions, cancellation release and salted password storage. Browser checks are documented separately in `VERIFICATION.md`.
-
+`node --test tests/*.test.js` passes nine test results, including six scenario groups under the complete-lifecycle test. Assertions cover authentication, authorization, ownership, active-resource uniqueness, boundaries, status transitions, cancellation release, exact passwords, Unicode requests, session expiry and persistence after restart. Browser checks are documented separately in `VERIFICATION.md`.

@@ -1,10 +1,10 @@
 # Verification
 
-Checked on 22 October 2026 with the bundled Node.js 24.19.0 runtime.
+Final automated audit on 25 October 2026; earlier full browser walkthrough on 22 October 2026 with the bundled Node.js 24.19.0 runtime.
 
 ## Automated checks
 
-All eight Node test results pass. The suite includes date arithmetic and a complete HTTP lifecycle with six scenario groups. It runs against an in-memory SQLite database and checks server behavior rather than mocking permission decisions.
+All nine Node test results pass. The suite includes date arithmetic, a complete HTTP lifecycle with six scenario groups and request/persistence regressions. It runs against isolated in-memory and temporary-file SQLite databases and checks server behavior rather than mocking permission decisions.
 
 Covered: anonymous access, customer signup, duplicate emails, studio role escalation rejection, login, wrong-role actions, cross-origin mutation rejection, owned-record 404, competing painting purchases, cancellation release, painting add/edit restrictions, wall size/date boundaries, one active booking per date, confirmation/decline/cancellation, inclusive three-day cancellation cutoff, pottery choices/quantity/date/edit/decision restrictions, private dashboard filtering, salted password storage and logout.
 
@@ -22,7 +22,7 @@ Covered: anonymous access, customer signup, duplicate emails, studio role escala
 - At a 390 Ã— 844 viewport override, the navigation and gallery reflowed to the mobile layout. Document width did not exceed viewport width. Restored the original viewport afterward.
 - Final browser error log was empty after the restored visitor page loaded.
 
-The browser test used explicitly artificial customer and address data. Generated QA records are removed from the local database before handoff. The source ZIP contains no runtime database. No video was recorded.
+The browser test used explicitly artificial customer and address data. Generated QA records are removed from the local database before handoff. The source ZIP contains no runtime database. A separate silent walkthrough was subsequently recorded on the user’s command; narration is still pending.
 
 ## Limits
 
@@ -36,3 +36,17 @@ Browser verified `/profile.html` displaying the signed-in customer name, email, 
 ## Separate service pages
 
 An isolated in-memory preview verified customer signup on the wall-art page, a successful wall request, a pottery request from the pottery page and a painting order from the collection page. Each successful action opened Profile, which displayed all three resulting records and the Customer account label. A homepage DOM check found no booking form, pottery form or painting-purchase controls. Real local records were not modified by these checks. Browser error logs were empty. The regular preview also opened the dedicated wall-art page through the homepage navigation.
+
+## Final audit — 25 October 2026
+
+Fixed and checked:
+- Dedicated wall/pottery pages now provide their own working Try again button after catalogue failure.
+- Expired sessions clear private profile content and restore login controls instead of leaving the interface signed in.
+- Passwords preserve leading/trailing spaces exactly.
+- JSON requests decode Unicode correctly when a multibyte character crosses network chunks; the body size limit returns 413.
+- Session cookies work with or without whitespace after separators.
+- Malformed percent-encoded page paths return 400 instead of an internal server error; incorrect JSON content types return 415.
+
+Fresh automated checks also cover data/session/order persistence after database reopening, no duplicate catalogue seeding, server-controlled purchase prices, all five page routes, all 12 seed image files, and additional wrong-role/ownership cases. Both JavaScript syntax checks and Git whitespace checks pass.
+
+Fresh browser checks used an isolated in-memory preview: customer signup; simulated catalogue outage and successful retry; 100 sq ft wall booking at INR 15,000; redirect to separate Profile; forced session expiration with private activity removed and login restored; studio login and confirmation of that booking. The browser error log was empty. Real local customer records were untouched.
