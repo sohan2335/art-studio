@@ -1,6 +1,6 @@
 # Verification
 
-Final automated audit on 25 October 2026; earlier full browser walkthrough on 22 October 2026 with the bundled Node.js 24.19.0 runtime.
+Final automated audit on 25 October 2026; earlier full browser walkthrough on 22 October 2026 with the bundled Node.js runtime (24.22.1 for the final audit).
 
 ## Automated checks
 
@@ -50,3 +50,5 @@ Fixed and checked:
 Fresh automated checks also cover data/session/order persistence after database reopening, no duplicate catalogue seeding, server-controlled purchase prices, all five page routes, all 12 seed image files, and additional wrong-role/ownership cases. Both JavaScript syntax checks and Git whitespace checks pass.
 
 Fresh browser checks used an isolated in-memory preview: customer signup; simulated catalogue outage and successful retry; 100 sq ft wall booking at INR 15,000; redirect to separate Profile; forced session expiration with private activity removed and login restored; studio login and confirmation of that booking. The browser error log was empty. Real local customer records were untouched.
+
+The final Git source ZIP was extracted separately and checked for required files, linked local assets and exclusion of runtime databases/.env/logs. A fresh startup and generated studio login from that extracted copy passed.
