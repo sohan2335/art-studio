@@ -32,3 +32,7 @@ The HTTP tests cover more invalid-input and ownership cases than the manual brow
 ## Separate Profile page update
 
 Browser verified `/profile.html` displaying the signed-in customer name, email, owned painting orders, wall bookings and pottery requests. Back to the studio returns to the homepage. The top-bar Profile link returns to the separate page. A DOM check confirmed the homepage contains no dashboard element. Existing records were viewed without modification. Role and ownership checks remain in the same server API.
+
+## Separate service pages
+
+An isolated in-memory preview verified customer signup on the wall-art page, a successful wall request, a pottery request from the pottery page and a painting order from the collection page. Each successful action opened Profile, which displayed all three resulting records and the Customer account label. A homepage DOM check found no booking form, pottery form or painting-purchase controls. Real local records were not modified by these checks. Browser error logs were empty. The regular preview also opened the dedicated wall-art page through the homepage navigation.

@@ -10,7 +10,7 @@ Remaining steps:
 4. Upload the recording to Drive and make its link viewable, as the assignment requires.
 5. Submit the repository link, demo link and other required fields using the assignment's Google form before **23 October 2026, 11:59 PM IST**.
 
-No video has been recorded. The source repository is https://github.com/sohan2335/art-studio . No submission has been sent.
+A silent walkthrough has been recorded. Add your own voice and review the final export before submission. The source repository is https://github.com/sohan2335/art-studio . No submission has been sent.
 
 Suggested feature to explain: preventing two painting purchases with a database transaction and a unique active-order index. Practise explaining it in your own words before recording.
 

@@ -38,7 +38,7 @@ No `.env` file is needed. `.env.example` lists every optional application enviro
 
 ## Use it
 
-Create a customer account, open a painting and place an order. View it in **My activity**, then cancel to release it. Fill the wall booking and pottery forms. Log out and log in as the studio to review requests and edit/add paintings. Log back in as the customer to see updated statuses. To test privacy, use a second browser profile and a second customer account.
+Create a customer account, open a painting and place an order. View it in **My activity**, then cancel to release it. Use the separate Wall art and Pottery pages to make requests. Log out and log in as the studio to review requests and edit/add paintings. Log back in as the customer to see updated statuses. To test privacy, use a second browser profile and a second customer account.
 
 All dates use **Asia/Kolkata (IST)** and calendar-day rules. The app stores dates as `YYYY-MM-DD` and converts those dates to UTC only for day arithmetic. The rule is not a rolling count of 24-hour periods from the current clock time. Whole square feet is a documented UI choice; fractional sizes are not accepted.
 
@@ -51,14 +51,17 @@ The tests start a temporary in-memory database, bind a local test server and dis
 ## Files to understand
 
 - `server.js`: HTTP server, SQLite schema, validation, password/session handling, permissions and routes.
-- `public/index.html`: homepage structure and section anchors.
+- `public/index.html`: studio introduction and links to the separate service pages.
+- `public/collection.html`: browse, buy and manage paintings.
+- `public/wall-art.html`: request a wall painting date.
+- `public/pottery.html`: create a pottery request.
 - `public/profile.html`: separate account profile and activity page.
 - `public/styles.css`: colours, glass navigation, layouts and responsive rules.
 - `public/app.js`: screen state, API requests, form events and rendering.
 - `data/seed.json` and `public/images/`: assignment-provided catalogue and sample images.
 - `tests/studio.test.js`: executable examples of business rules.
 - `DESIGN.md`: answers to the assignment design questions.
-- `SUBMISSION.md`: remaining submission steps. No demo recording has been made.
+- `SUBMISSION.md`: remaining submission steps. A silent walkthrough is prepared separately; your own narration is still required.
 
 ## Scope and limitations
 
@@ -70,9 +73,13 @@ Seed records initially marked sold have no fabricated customer orders. The suppl
 
 ## Submission
 
-The assignment asks for a public GitHub repository, README, `.env.example`, DESIGN.md and a narrated demo of at most 5 minutes, submitted through its Google form by **23 October 2026, 11:59 PM IST**. Source repository: https://github.com/sohan2335/art-studio . Uploading a demo and submitting the form have not been performed. The video will be recorded only on your command.
+The assignment asks for a public GitHub repository, README, `.env.example`, DESIGN.md and a narrated demo of at most 5 minutes, submitted through its Google form by **23 October 2026, 11:59 PM IST**. Source repository: https://github.com/sohan2335/art-studio . Uploading a demo and submitting the form have not been performed. A silent live-browser walkthrough is prepared locally. See DEMO.md and add your own narration before submission.
 
 
 
 
 Profile update: open **Profile** in the top bar to view orders, wall bookings and pottery requests on a separate webpage. The homepage has no activity section. Old `/#dashboard` links redirect to `/profile.html`. New painting orders and requests open the Profile page after success.
+
+## Separate service pages
+
+The homepage introduces the studio and previews its work. Open Paintings (`/collection.html`), Wall art (`/wall-art.html`) or Pottery (`/pottery.html`) to order or book. Signup/login on a service page keeps customers on that page. Successful orders and requests open Profile. Customers and the studio see their role clearly on Profile. See `RBAC.md` for login emails, permissions and a hands-on role walkthrough.
